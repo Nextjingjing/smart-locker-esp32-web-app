@@ -64,6 +64,9 @@ bool rfid_request() {
     // Stop command
     writeReg(COMMAND_REG, 0x00);
 
+    // ล้างค่า Interrupt
+    writeReg(COMM_IRQ_REG, 0x7F);
+
     // Clear FIFO
     writeReg(FIFO_LEVEL_REG, 0x80);
 
@@ -79,11 +82,13 @@ bool rfid_request() {
     // Start sending
     writeReg(BIT_FRAMING_REG, 0x87);
 
+    // รอให้บัตรตอบกลับ
     delay(5);
 
     uint8_t irq = readReg(COMM_IRQ_REG);
 
-    if (irq & 0x30) {
+    // *** แก้ไขตรงนี้: เช็คแค่ 0x20 (RxIRq) คือการยืนยันว่าได้รับข้อมูลจริง ***
+    if (irq & 0x20) {
         return true;
     }
 
@@ -92,11 +97,18 @@ bool rfid_request() {
 
 bool rfid_read_uid(uint8_t *uid) {
 
+    // Stop command
     writeReg(COMMAND_REG, 0x00);
+
+    // ล้างค่า Interrupt
+    writeReg(COMM_IRQ_REG, 0x7F);
+
+    // Clear FIFO
     writeReg(FIFO_LEVEL_REG, 0x80);
 
     writeReg(BIT_FRAMING_REG, 0x00);
 
+    // ส่งคำสั่ง Anticollision
     writeReg(FIFO_DATA_REG, 0x93);
     writeReg(FIFO_DATA_REG, 0x20);
 
@@ -104,6 +116,13 @@ bool rfid_read_uid(uint8_t *uid) {
     writeReg(BIT_FRAMING_REG, 0x80);
 
     delay(5);
+
+    uint8_t irq = readReg(COMM_IRQ_REG);
+
+    // เช็คอีกรอบว่าได้รับข้อมูล UID จริงไหม
+    if (!(irq & 0x20)) {
+        return false;
+    }
 
     uint8_t level = readReg(FIFO_LEVEL_REG);
 
