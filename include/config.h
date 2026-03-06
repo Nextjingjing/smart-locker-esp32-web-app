@@ -10,6 +10,11 @@
 #define MISO_PIN  19
 #define MOSI_PIN  23
 
+// LCD I2C
+#define LCD_ADDR  0x27
+#define LCD_SDA   21
+#define LCD_SCL   22
+
 #define BAUD_RATE 115200
 
 #endif // CONFIG_H
