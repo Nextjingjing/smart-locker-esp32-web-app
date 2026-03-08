@@ -42,7 +42,7 @@ void lcd_write_char(char c) {
 
 void lcd_init() {
 
-    Wire.begin(LCD_SDA, LCD_SCL);
+    Wire.begin(SDA, SCL);
 
     delay(50);
 

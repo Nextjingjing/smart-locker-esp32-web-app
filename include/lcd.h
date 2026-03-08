@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define LCD_ADDR  0x27
+
 #define LCD_RS 0x01
 #define LCD_EN 0x04
 #define LCD_BL 0x08
@@ -20,6 +22,7 @@
 // row offsets
 #define LCD_ROW0_OFFSET 0x00
 #define LCD_ROW1_OFFSET 0x40
+
 
 #define LCD_HIGH_NIBBLE_MASK 0xF0
 #define LCD_NIBBLE_SHIFT     4

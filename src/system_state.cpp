@@ -37,7 +37,7 @@ void state_init() {
     rfid_init();
     
     // เริ่มต้น BME280 ที่ขา I2C (SDA=21, SCL=22)
-    if (!bme280_begin(21, 22)) {
+    if (!bme280_begin(SDA, SCL)) {
         Serial.println("Warning: BME280 not found! Check wiring.");
     } else {
         Serial.println("BME280 initialized successfully.");
