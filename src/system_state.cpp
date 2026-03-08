@@ -11,7 +11,7 @@ static unsigned long state_timer = 0;
 static unsigned long bme_update_timer = 0;
 
 /**
- * อ่านเซนเซอร์เพียงครั้งเดียว แล้วอัปเดตทั้ง Serial, LCD และคืนค่าผ่าน Parameter
+ * Reads sensor data once, then updates Serial, LCD, and returns values via parameters.
  */
 static void update_bme_all(float &t, float &h, float &p) {
     bme280_read(t, h, p);
@@ -43,7 +43,7 @@ void state_init() {
 
     current_state = STATE_IDLE;
     
-    // แสดงผลครั้งแรกตอนเปิดเครื่อง
+    // Initial display on boot
     float t, h, p;
     update_bme_all(t, h, p);
     bme_update_timer = millis();
@@ -53,7 +53,7 @@ void state_update() {
     uint8_t uid[5];
     float current_t, current_h, current_p;
 
-    // อัปเดตและส่งค่า BME ทุก 2 วินาทีเฉพาะตอน IDLE
+    // Update and send BME data every 2 seconds only when in IDLE state
     if (current_state == STATE_IDLE) {
         if (millis() - bme_update_timer > 2000) {
             update_bme_all(current_t, current_h, current_p);
@@ -71,7 +71,7 @@ void state_update() {
 
         case STATE_CARD_DETECTED:
             if (rfid_read_uid(uid)) {
-                // เตรียม UID ในรูปแบบ String HEX สำหรับส่ง HTTP
+                // Prepare UID as HEX string for HTTP transmission
                 String card_uid = "";
                 for (int i = 0; i < 4; i++) {
                     if (uid[i] < 0x10) card_uid += "0";
@@ -111,7 +111,7 @@ void state_update() {
         case STATE_UNLOCK:
             if (millis() - state_timer > 3000) {
                 current_state = STATE_IDLE;
-                update_bme_all(current_t, current_h, current_p); // กลับมาโชว์ค่าทันที
+                update_bme_all(current_t, current_h, current_p); // Resume sensor display immediately
                 bme_update_timer = millis();
             }
             break;

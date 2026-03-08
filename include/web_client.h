@@ -4,18 +4,22 @@
 #include <Arduino.h>
 
 /**
- * @brief เชื่อมต่อ WiFi โดยใช้ SSID/PASS จาก config.h
- * @return true เมื่อเชื่อมต่อสำเร็จ
+ * @brief Initializes WiFi connection using SSID/PASS defined in config.h.
+ * @return true if connection is successful, false otherwise.
  */
 bool wifi_init();
 
 /**
- * @brief ส่งค่าเซนเซอร์ BME280 ไปยัง Go Server
+ * @brief Sends BME280 sensor readings (temperature, humidity, pressure) to the Go Server.
+ * @param temp Temperature value in Celsius.
+ * @param hum Relative humidity percentage.
+ * @param pres Atmospheric pressure in hPa.
  */
 void send_environment_data(float temp, float hum, float pres);
 
 /**
- * @brief ส่งสถานะการแตะบัตร RFID ไปยัง Go Server
+ * @brief Reports RFID card tap events and door status to the Go Server.
+ * @param status A string representing the door or card event (e.g., "AUTHORIZED", "DENIED").
  */
 void send_door_data(String status);
 

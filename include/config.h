@@ -41,14 +41,29 @@
  * @note Format: {Byte1, Byte2, Byte3, Byte4}
  */
 const uint8_t AUTHORIZED_UID[4] = {0x35, 0x85, 0x4E, 0x06};
-
-// Wi-Fi Settings
+ 
+/** * @brief Wi-Fi Settings:
+ * Wifi ssid
+ */
 #define WIFI_SSID "Pruek"
+/** * @brief Wi-Fi Settings:
+ * Wifi password
+ */
 #define WIFI_PASS "065xxxxxxxxxxxx"
 
+/** * @brief Web application Endpoint:
+ * For sending data from BME280
+ */
 #define API_ENV_ENDPOINT  "http://192.168.1.75:3000/data/environment"
+
+/** * @brief Web application Endpoint:
+ * For sending data from MFRC522 RFID reader module
+ */
 #define API_DOOR_ENDPOINT "http://192.168.1.75:3000/data/door"
 
+/** * @brief Web application API Key:
+ * For Authorization with web app
+ */
 #define API_KEY "xxxxxxxxxxxxxxxxxxxxx"
 
 #endif // CONFIG_H

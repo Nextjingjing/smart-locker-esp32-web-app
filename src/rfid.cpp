@@ -2,11 +2,6 @@
 #include "rfid.h"
 #include <SPI.h>
 
-/* --- Internal Helper Functions --- */
-
-/**
- * Enables the antenna by setting the first two bits of TX_CONTROL_REG.
- */
 void antennaOn() {
     uint8_t value = readReg(TX_CONTROL_REG);
     if (!(value & 0x03)) {
@@ -14,10 +9,6 @@ void antennaOn() {
     }
 }
 
-/**
- * Writes data to MFRC522 via SPI. 
- * Address is shifted left 1 bit; LSB is 0 for Write.
- */
 void writeReg(uint8_t reg, uint8_t value) {
     digitalWrite(SS_PIN, LOW);
     SPI.transfer((reg << 1) & 0x7E); 
@@ -25,10 +16,7 @@ void writeReg(uint8_t reg, uint8_t value) {
     digitalWrite(SS_PIN, HIGH);
 }
 
-/**
- * Reads data from MFRC522 via SPI.
- * Address is shifted left 1 bit; MSB is 1 for Read.
- */
+
 uint8_t readReg(uint8_t reg) {
     uint8_t value;
     digitalWrite(SS_PIN, LOW);
@@ -59,10 +47,6 @@ void rfid_init() {
     antennaOn();
 }
 
-/**
- * Requests a tag (REQA). 
- * Checks RxIRq (0x20) to confirm a tag responded.
- */
 bool rfid_request() {
     writeReg(COMMAND_REG, 0x00);
     writeReg(COMM_IRQ_REG, 0x7F);
@@ -79,10 +63,6 @@ bool rfid_request() {
     return (readReg(COMM_IRQ_REG) & 0x20);
 }
 
-/**
- * Performs Anticollision to get the UID.
- * Validates that exactly 5 bytes (4 UID + 1 BCC) are in the FIFO.
- */
 bool rfid_read_uid(uint8_t *uid) {
     writeReg(COMMAND_REG, 0x00);
     writeReg(COMM_IRQ_REG, 0x7F);
