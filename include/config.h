@@ -42,4 +42,13 @@
  */
 const uint8_t AUTHORIZED_UID[4] = {0x35, 0x85, 0x4E, 0x06};
 
+// Wi-Fi Settings
+#define WIFI_SSID "Pruek"
+#define WIFI_PASS "065xxxxxxxxxxxx"
+
+#define API_ENV_ENDPOINT  "http://192.168.1.75:3000/data/environment"
+#define API_DOOR_ENDPOINT "http://192.168.1.75:3000/data/door"
+
+#define API_KEY "xxxxxxxxxxxxxxxxxxxxx"
+
 #endif // CONFIG_H
