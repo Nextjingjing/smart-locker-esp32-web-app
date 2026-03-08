@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/Nextjingjing/smart-locker-esp32-web-app/web/internal/database"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -12,6 +13,7 @@ import (
 )
 
 var MY_API_KEY string
+var influxDB *database.InfluxClient
 
 func init() {
 	// Load environment variables from .env file
@@ -24,6 +26,13 @@ func init() {
 	if MY_API_KEY == "" {
 		log.Fatal("MY_API_KEY is not set in environment variables")
 	}
+
+	influxDB = database.NewInfluxClient(
+		os.Getenv("INFLUX_URL"),
+		os.Getenv("INFLUX_TOKEN"),
+		os.Getenv("INFLUX_ORG"),
+		os.Getenv("INFLUX_BUCKET"),
+	)
 }
 
 // Hub maintains the set of active WebSocket connections
@@ -92,6 +101,11 @@ func main() {
 			return c.Status(400).SendString("Invalid BME280 Data")
 		}
 
+		err := influxDB.WriteEnvironmentData(data.Temp, data.Humidity, data.Pressure)
+		if err != nil {
+			log.Printf("Error saving to InfluxDB: %v", err)
+		}
+
 		broadcast(fiber.Map{
 			"type": "environment",
 			"data": data,
@@ -110,11 +124,32 @@ func main() {
 			return c.Status(400).SendString("Status is required")
 		}
 
+		err := influxDB.WriteDoorData(data.Status)
+		if err != nil {
+			log.Printf("Error saving door status to InfluxDB: %v", err)
+		}
+
 		broadcast(fiber.Map{
 			"type": "door",
 			"data": data,
 		})
 		return c.SendStatus(200)
+	})
+
+	app.Get("/api/history", func(c *fiber.Ctx) error {
+		date := c.Query("date")
+		dataType := c.Query("type")
+
+		field := dataType
+		if dataType == "door" {
+			field = "status"
+		}
+
+		data, err := influxDB.GetDailyData(date, field)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+		return c.JSON(data)
 	})
 
 	log.Println("Server running at http://localhost:3000")

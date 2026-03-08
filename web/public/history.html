@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Data - Smart Office</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f4f7f6; }
+        .controls { margin-bottom: 20px; text-align: center; display: flex; justify-content: center; gap: 10px; align-items: center; }
+        .chart-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 400px; }
+        select, button { padding: 8px 16px; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #00cec9; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <input type="date" id="datePicker">
+        <select id="dataType">
+            <option value="temp">Temperature (°C)</option>
+            <option value="humidity">Humidity (%)</option>
+            <option value="pressure">Pressure (hPa)</option>
+            <option value="door">Door Status</option>
+        </select>
+        <button onclick="loadHistory()">Load Data</button>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="historyChart"></canvas>
+    </div>
+
+    <script>
+        let historyChart;
+
+        window.onload = () => {
+            document.getElementById('datePicker').valueAsDate = new Date();
+            loadHistory();
+        };
+
+        async function loadHistory() {
+            const date = document.getElementById('datePicker').value;
+            const type = document.getElementById('dataType').value;
+            
+            const res = await fetch(`/api/history?date=${date}&type=${type}`);
+            const data = await res.json();
+            renderChart(data, type);
+        }
+
+        function renderChart(data, type) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            if (historyChart) historyChart.destroy();
+
+            const configs = {
+                temp: { color: '#ff7675', label: 'Temperature (°C)' },
+                humidity: { color: '#00cec9', label: 'Humidity (%)' },
+                pressure: { color: '#a29bfe', label: 'Pressure (hPa)' },
+                door: { color: '#636e72', label: 'Door Status' }
+            };
+
+            const isDoor = (type === 'door');
+
+            historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => new Date(d.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })),
+                    datasets: [{
+                        label: configs[type].label,
+                        data: data.map(d => d.value),
+                        borderColor: configs[type].color,
+                        tension: isDoor ? 0 : 0.3,
+                        stepped: isDoor
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: isDoor ? -0.2 : undefined,
+                            max: isDoor ? 1.2 : undefined,
+                            ticks: {
+                                stepSize: isDoor ? 1 : undefined,
+                                callback: function(value) {
+                                    if (isDoor) {
+                                        if (value === 1) return 'Granted';
+                                        if (value === 0) return 'Denied';
+                                        return '';
+                                    }
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
