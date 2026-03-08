@@ -71,7 +71,7 @@ All hardware settings and network credentials are managed in `config.h`. Before 
 3. **Authentication**: Update the `AUTHORIZED_UID` byte array to match the UID of your specific RFID tag.
 4. **Security**: Replace the placeholder `API_KEY` with your actual server authorization token.
 
-./include/config.h
+`./include/config.h`
 ```c
 const uint8_t AUTHORIZED_UID[4] = {0x35, 0x85, 0x4E, 0x06};
 #define WIFI_SSID "Pruek"
