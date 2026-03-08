@@ -17,4 +17,7 @@
 
 #define BAUD_RATE 115200
 
+// uid
+const uint8_t AUTHORIZED_UID[4] = {0x35, 0x85, 0x4E, 0x06};
+
 #endif // CONFIG_H

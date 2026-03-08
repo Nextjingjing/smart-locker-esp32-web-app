@@ -2,15 +2,17 @@
 #include "system_state.h"
 
 void setup() {
-    Serial.begin(115200);
-    // ฟังก์ชันนี้จะทำการ Initialize ทั้ง LCD และ RFID ทันที
+    Serial.begin(115200); // อย่าลืมตั้ง Baudrate ใน Serial Monitor ให้ตรงกันนะ
+    Serial.println("System Booting...");
+    
+    // Initialize Hardware ทั้งหมด
     state_init();
 }
 
 void loop() {
-    // ให้ State Machine ทำงานวนลูปตรวจสอบตลอดเวลา
+    // State Machine ตรวจสอบตลอดเวลา
     state_update();
     
-    // หน่วงเวลาเล็กน้อยเพื่อไม่ให้ลูปทำงานหนักเกินไป
+    // หน่วงเวลาเล็กน้อย
     delay(10); 
 }
