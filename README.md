@@ -81,6 +81,20 @@ const uint8_t AUTHORIZED_UID[4] = {0x35, 0x85, 0x4E, 0x06};
 #define API_KEY "xxxxxxxxxxxxxxxxxxxxx"
 ```
 
+## 📂 Project Structure
+
+The project is organized into two main parts: the ESP32 Firmware (PlatformIO) and the Go Web Server.
+
+```text
+.
+├── include/              # C++ Header files (Hardware definitions)
+├── src/                  # C++ Source files (Logic implementation)
+├── web/                  # Go Backend & Frontend
+│   ├── main.go           # REST API Server
+│   └── public/           # Web Dashboard (HTML/JS)
+└── platformio.ini        # Project configuration & Dependencies
+```
+
 ## Usage
 
 1. Open the project in the Arduino IDE or PlatformIO.
