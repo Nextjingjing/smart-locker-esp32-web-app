@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/Nextjingjing/smart-locker-esp32-web-app/web/internal/database"
+	"github.com/Nextjingjing/smart-locker-esp32-web-app/web/internal/discord"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -106,6 +107,8 @@ func main() {
 			log.Printf("Error saving to InfluxDB: %v", err)
 		}
 
+		discord.NotifyEnvironment(data.Temp, data.Humidity)
+
 		broadcast(fiber.Map{
 			"type": "environment",
 			"data": data,
@@ -128,6 +131,8 @@ func main() {
 		if err != nil {
 			log.Printf("Error saving door status to InfluxDB: %v", err)
 		}
+
+		discord.NotifyDiscord(data.Status)
 
 		broadcast(fiber.Map{
 			"type": "door",
